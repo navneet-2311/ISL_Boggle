@@ -30,7 +30,11 @@ public class ModelRunner {
         opts.setNumThreads(2);
         this.interpreter = new Interpreter(modelBuffer, opts);
 
-        int[] outShape = interpreter.getOutputTensor(0).shape(); // [1, N]
+        // Some exported models use dynamic batch dimensions; force a single example.
+        interpreter.resizeInput(0, new int[]{1, LandmarkProcessor.FLAT_SIZE});
+        interpreter.allocateTensors();
+
+        int[] outShape = interpreter.getOutputTensor(0).shape();
         this.numClasses = outShape[outShape.length - 1];
         Log.i(TAG, "Model loaded. Output classes: " + numClasses);
     }
@@ -59,14 +63,40 @@ public class ModelRunner {
         float[][] input  = new float[1][LandmarkProcessor.FLAT_SIZE];
         System.arraycopy(flat42, 0, input[0], 0, LandmarkProcessor.FLAT_SIZE);
 
-        float[][] output = new float[1][numClasses];
         try {
+            // Keep dynamic-shape models pinned to batch=1 before each inference.
+            int[] inShape = interpreter.getInputTensor(0).shape();
+            if (inShape.length >= 2 && (inShape[0] != 1 || inShape[1] != LandmarkProcessor.FLAT_SIZE)) {
+                interpreter.resizeInput(0, new int[]{1, LandmarkProcessor.FLAT_SIZE});
+                interpreter.allocateTensors();
+            }
+
+            int[] outShape = interpreter.getOutputTensor(0).shape();
+            if (outShape.length == 0) {
+                Log.e(TAG, "Unexpected scalar output tensor");
+                return null;
+            }
+
+            if (outShape.length == 1) {
+                float[] output = new float[outShape[0]];
+                interpreter.run(input, output);
+                return output;
+            }
+
+            int batch = outShape[0];
+            int classes = outShape[outShape.length - 1];
+            if (batch <= 0 || classes <= 0) {
+                Log.e(TAG, "Invalid output tensor shape: [" + batch + ", " + classes + "]");
+                return null;
+            }
+
+            float[][] output = new float[batch][classes];
             interpreter.run(input, output);
+            return output[0];
         } catch (Exception e) {
             Log.e(TAG, "Inference failed", e);
             return null;
         }
-        return output[0];
     }
 
     public void close() {
