@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="accent">#FF4CAF50</color>
+    <color name="overlay_bg">#99000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <string name="app_name">ISL Boggle</string>
+    <style name="Theme.ISLBoggle" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:statusBarColor">#000000</item>
+    </style>
+</resources>

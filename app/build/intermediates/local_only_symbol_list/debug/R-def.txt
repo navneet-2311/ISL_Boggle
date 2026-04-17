@@ -1,0 +1,19 @@
+R_DEF: Internal format may change without notice
+local
+color accent
+color overlay_bg
+color white
+drawable ic_launcher_background
+drawable ic_launcher_foreground
+id commitButton
+id letterText
+id previewView
+id resetButton
+id scoreText
+id statusText
+id topOverlay
+id wordText
+layout activity_main
+mipmap ic_launcher
+string app_name
+style Theme.ISLBoggle
