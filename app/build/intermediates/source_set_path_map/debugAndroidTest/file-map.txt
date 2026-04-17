@@ -1,0 +1,4 @@
+com.example.islboggle.test.app-androidTest-0 C:\Users\nav86\Downloads\ISLBoggle-android\isl\ISL_Boggle\app\build\generated\res\resValues\androidTest\debug
+com.example.islboggle.test.app-mergeDebugAndroidTestResources-1 C:\Users\nav86\Downloads\ISLBoggle-android\isl\ISL_Boggle\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
+com.example.islboggle.test.app-mergeDebugAndroidTestResources-2 C:\Users\nav86\Downloads\ISLBoggle-android\isl\ISL_Boggle\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
+com.example.islboggle.test.app-merged_res-3 C:\Users\nav86\Downloads\ISLBoggle-android\isl\ISL_Boggle\app\build\intermediates\merged_res\debugAndroidTest

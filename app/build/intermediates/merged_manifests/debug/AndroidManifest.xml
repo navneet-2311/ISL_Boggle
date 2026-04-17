@@ -31,10 +31,9 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:testOnly="true"
         android:theme="@style/Theme.ISLBoggle" >
         <activity
-            android:name="com.example.islboggle.MainActivity"
+            android:name="com.example.islboggle.ui.map.MapActivity"
             android:exported="true"
             android:screenOrientation="portrait" >
             <intent-filter>
@@ -42,6 +41,11 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name="com.example.islboggle.ui.game.GameActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" >
         </activity>
 
         <service

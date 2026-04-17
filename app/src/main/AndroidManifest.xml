@@ -12,13 +12,18 @@
         android:extractNativeLibs="true"
         android:theme="@style/Theme.ISLBoggle">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.map.MapActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.game.GameActivity"
+            android:exported="false"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 </manifest>

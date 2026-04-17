@@ -40,7 +40,7 @@ public class MediaPipeHandler {
                 HandLandmarker.HandLandmarkerOptions.builder()
                         .setBaseOptions(baseOptions)
                         .setRunningMode(RunningMode.IMAGE)
-                        .setNumHands(1)
+                        .setNumHands(2)
                         .setMinHandDetectionConfidence(0.5f)
                         .setMinHandPresenceConfidence(0.5f)
                         .setMinTrackingConfidence(0.5f)

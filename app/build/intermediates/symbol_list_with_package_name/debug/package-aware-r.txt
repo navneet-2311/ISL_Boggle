@@ -3192,6 +3192,7 @@ id beginOnFirstDraw
 id beginning
 id bestChoice
 id blocking
+id boggleGrid
 id bottom
 id bounce
 id bounceBoth
@@ -3214,13 +3215,13 @@ id checkbox
 id checked
 id chronometer
 id circle_center
+id clearButton
 id clear_text
 id clip_horizontal
 id clip_vertical
 id clockwise
 id closest
 id collapseActionView
-id commitButton
 id compatible
 id compress
 id confirm_button
@@ -3243,6 +3244,7 @@ id decelerate
 id decelerateAndComplete
 id decor_content_parent
 id default_activity_button
+id deleteButton
 id deltaRelative
 id dependency_ordering
 id design_bottom_sheet
@@ -3304,6 +3306,7 @@ id forever
 id fragment_container_view_tag
 id frost
 id fullscreen_header
+id gamePanel
 id ghost_view
 id ghost_view_holder
 id gone
@@ -3331,6 +3334,7 @@ id indeterminate
 id info
 id invisible
 id inward
+id is_pooling_container_tag
 id italic
 id item_touch_helper_previous_elevation
 id jumpToEnd
@@ -3340,12 +3344,13 @@ id layout
 id left
 id leftToRight
 id legacy
-id letterText
+id levelNumberText
 id line1
 id line3
 id linear
 id listMode
 id list_item
+id lockIcon
 id m3_side_sheet
 id marquee
 id masked
@@ -3418,6 +3423,7 @@ id neverCompleteToEnd
 id neverCompleteToStart
 id noScroll
 id noState
+id nodeCard
 id none
 id normal
 id north
@@ -3457,8 +3463,10 @@ id peekHeight
 id percent
 id performance
 id pin
+id pooling_container_listener_holder_tag
 id position
 id postLayout
+id predictionLetterText
 id pressed
 id previewView
 id progress_circular
@@ -3466,8 +3474,8 @@ id progress_horizontal
 id radio
 id ratio
 id rectangles
+id recyclerView
 id report_drawn
-id resetButton
 id reverseSawtooth
 id right
 id rightToLeft
@@ -3536,6 +3544,7 @@ id statusText
 id stop
 id stretch
 id submenuarrow
+id submitButton
 id submit_area
 id supportScrollUp
 id tabMode
@@ -3569,12 +3578,12 @@ id textinput_placeholder
 id textinput_prefix_text
 id textinput_suffix_text
 id time
+id timerText
 id title
 id titleDividerNoCustom
 id title_template
 id toggle
 id top
-id topOverlay
 id topPanel
 id touch_outside
 id transitionToEnd
@@ -3606,7 +3615,7 @@ id west
 id withText
 id with_icon
 id withinBounds
-id wordText
+id wordBuilderText
 id wrap
 id wrap_content
 id wrap_content_constrained
@@ -3726,7 +3735,8 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
-layout activity_main
+layout activity_game
+layout activity_map
 layout custom_dialog
 layout design_bottom_navigation_item
 layout design_bottom_sheet_dialog
@@ -3745,6 +3755,7 @@ layout design_text_input_end_icon
 layout design_text_input_start_icon
 layout ime_base_split_test_activity
 layout ime_secondary_split_test_activity
+layout item_level_node
 layout m3_alert_dialog
 layout m3_alert_dialog_actions
 layout m3_alert_dialog_title

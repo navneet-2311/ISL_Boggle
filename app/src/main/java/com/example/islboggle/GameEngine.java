@@ -8,12 +8,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
-/**
- * Boggle-style game logic: builds a word from stable letters,
- * validates against dictionary, and tracks score.
- */
 public class GameEngine {
 
     private static final String TAG = "GameEngine";
@@ -22,9 +19,15 @@ public class GameEngine {
     private final Set<String> dictionary = new HashSet<>();
     private final StringBuilder currentWord = new StringBuilder();
     private int score = 0;
+    
+    private char[][] grid;
+    private final int gridSize = 4;
+    private final Random random = new Random();
+    private static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     public GameEngine(Context context) {
         loadDictionary(context);
+        generateGrid();
     }
 
     private void loadDictionary(Context context) {
@@ -41,16 +44,38 @@ public class GameEngine {
         }
     }
 
+    public void generateGrid() {
+        grid = new char[gridSize][gridSize];
+        for (int r = 0; r < gridSize; r++) {
+            for (int c = 0; c < gridSize; c++) {
+                grid[r][c] = ALPHABET.charAt(random.nextInt(ALPHABET.length()));
+            }
+        }
+    }
+
+    public char[][] getGrid() {
+        return grid;
+    }
+
     public synchronized void appendLetter(String letter) {
         if (letter == null || letter.isEmpty()) return;
         currentWord.append(letter.toUpperCase());
     }
 
-    /** Returns >0 (points awarded) if current word is valid, else 0. Resets word on success. */
+    public synchronized void deleteLastLetter() {
+        if (currentWord.length() > 0) {
+            currentWord.deleteCharAt(currentWord.length() - 1);
+        }
+    }
+
+    public synchronized void resetWord() {
+        currentWord.setLength(0);
+    }
+
     public synchronized int tryCommitWord() {
         String w = currentWord.toString().toUpperCase();
-        if (w.length() >= 2 && dictionary.contains(w)) {
-            int points = w.length();
+        if (w.length() >= 2 && dictionary.contains(w) && isWordInGrid(w)) {
+            int points = w.length() * 10;
             score += points;
             currentWord.setLength(0);
             Log.i(TAG, "Valid word: " + w + " (+" + points + ")");
@@ -59,8 +84,39 @@ public class GameEngine {
         return 0;
     }
 
-    public synchronized void resetWord() {
-        currentWord.setLength(0);
+    private boolean isWordInGrid(String word) {
+        if (word == null || word.isEmpty()) return false;
+        for (int r = 0; r < gridSize; r++) {
+            for (int c = 0; c < gridSize; c++) {
+                if (grid[r][c] == word.charAt(0)) {
+                    boolean[][] visited = new boolean[gridSize][gridSize];
+                    if (dfs(r, c, word, 0, visited)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean dfs(int r, int c, String word, int index, boolean[][] visited) {
+        if (index == word.length()) return true;
+        if (r < 0 || c < 0 || r >= gridSize || c >= gridSize) return false;
+        if (visited[r][c] || grid[r][c] != word.charAt(index)) return false;
+
+        visited[r][c] = true;
+
+        int[] dr = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int[] dc = {-1, 0, 1, -1, 1, -1, 0, 1};
+        
+        for (int i = 0; i < 8; i++) {
+            if (dfs(r + dr[i], c + dc[i], word, index + 1, visited)) {
+                return true;
+            }
+        }
+
+        visited[r][c] = false;
+        return false;
     }
 
     public synchronized String getCurrentWord() { return currentWord.toString(); }

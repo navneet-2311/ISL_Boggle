@@ -1,22 +1,30 @@
 [
     {
-        "merged": "com.example.islboggle.app-merged_res-36:/drawable_ic_launcher_foreground.xml.flat",
-        "source": "com.example.islboggle.app-main-38:/drawable/ic_launcher_foreground.xml"
+        "merged": "com.example.islboggle.app-merged_res-37:/drawable_ic_launcher_background.xml.flat",
+        "source": "com.example.islboggle.app-main-39:/drawable/ic_launcher_background.xml"
     },
     {
-        "merged": "com.example.islboggle.app-merged_res-36:/mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "com.example.islboggle.app-main-38:/mipmap-anydpi-v26/ic_launcher.xml"
+        "merged": "com.example.islboggle.app-merged_res-37:/mipmap_ic_launcher.xml.flat",
+        "source": "com.example.islboggle.app-main-39:/mipmap/ic_launcher.xml"
     },
     {
-        "merged": "com.example.islboggle.app-merged_res-36:/mipmap_ic_launcher.xml.flat",
-        "source": "com.example.islboggle.app-main-38:/mipmap/ic_launcher.xml"
+        "merged": "com.example.islboggle.app-merged_res-37:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "com.example.islboggle.app-main-39:/mipmap-anydpi-v26/ic_launcher.xml"
     },
     {
-        "merged": "com.example.islboggle.app-merged_res-36:/layout_activity_main.xml.flat",
-        "source": "com.example.islboggle.app-main-38:/layout/activity_main.xml"
+        "merged": "com.example.islboggle.app-merged_res-37:/layout_activity_map.xml.flat",
+        "source": "com.example.islboggle.app-main-39:/layout/activity_map.xml"
     },
     {
-        "merged": "com.example.islboggle.app-merged_res-36:/drawable_ic_launcher_background.xml.flat",
-        "source": "com.example.islboggle.app-main-38:/drawable/ic_launcher_background.xml"
+        "merged": "com.example.islboggle.app-merged_res-37:/layout_activity_game.xml.flat",
+        "source": "com.example.islboggle.app-main-39:/layout/activity_game.xml"
+    },
+    {
+        "merged": "com.example.islboggle.app-merged_res-37:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "com.example.islboggle.app-main-39:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "com.example.islboggle.app-merged_res-37:/layout_item_level_node.xml.flat",
+        "source": "com.example.islboggle.app-main-39:/layout/item_level_node.xml"
     }
 ]
