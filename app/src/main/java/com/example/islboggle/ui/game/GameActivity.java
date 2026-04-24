@@ -43,7 +43,7 @@ public class GameActivity extends AppCompatActivity {
     private PreviewView previewView;
     private TextView timerText, scoreText, statusText, predictionLetterText, wordBuilderText;
     private GridLayout boggleGrid;
-    private Button clearButton, deleteButton, submitButton;
+    private Button recordButton;
 
     private CameraManager cameraManager;
     private MediaPipeHandler mediaPipe;
@@ -53,11 +53,8 @@ public class GameActivity extends AppCompatActivity {
     private FrameBuffer frameBuffer;
 
     private int levelId;
-
+    private boolean isRecording = false;
     private final Handler ui = new Handler(Looper.getMainLooper());
-    private volatile String lastStableWord = "";
-    private volatile long lastMatchMs = 0L;
-    private static final long MATCH_COOLDOWN_MS = 2500L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,14 +72,9 @@ public class GameActivity extends AppCompatActivity {
         predictionLetterText = findViewById(R.id.predictionLetterText);
         wordBuilderText = findViewById(R.id.wordBuilderText);
         boggleGrid = findViewById(R.id.boggleGrid);
-        
-        // Hide building buttons as per New System (Gesture -> Full Word)
-        clearButton = findViewById(R.id.clearButton);
-        deleteButton = findViewById(R.id.deleteButton);
-        submitButton = findViewById(R.id.submitButton);
-        clearButton.setVisibility(View.GONE);
-        deleteButton.setVisibility(View.GONE);
-        submitButton.setVisibility(View.GONE);
+        recordButton = findViewById(R.id.recordButton);
+
+        recordButton.setOnClickListener(v -> startRecordingSequence());
 
         landmarkProcessor = new LandmarkProcessor();
         predictionManager = new PredictionManager();
@@ -103,7 +95,6 @@ public class GameActivity extends AppCompatActivity {
         }
 
         observeViewModel();
-
         viewModel.startLevel(levelId);
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
@@ -111,6 +102,38 @@ public class GameActivity extends AppCompatActivity {
             startCamera();
         } else {
             permissionLauncher.launch(Manifest.permission.CAMERA);
+        }
+    }
+
+    private void startRecordingSequence() {
+        if (isRecording) return;
+        
+        isRecording = true;
+        frameBuffer.clear();
+        recordButton.setEnabled(false);
+        recordButton.setText("RECORDING... (5s)");
+        recordButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.GRAY));
+
+        // Stop recording after 5 seconds
+        ui.postDelayed(() -> {
+            isRecording = false;
+            recordButton.setEnabled(true);
+            recordButton.setText("RECORD GESTURE (5s)");
+            recordButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#D32F2F")));
+            
+            processRecordedBuffer();
+        }, 5000);
+    }
+
+    private void processRecordedBuffer() {
+        float[] probs = modelRunner.run(frameBuffer.getFlattenedInput());
+        if (probs != null) {
+            PredictionManager.Prediction p = predictionManager.update(probs);
+            if (!p.word.isEmpty()) {
+                viewModel.onWordPredicted(p.word, p.confidence);
+            } else {
+                statusText.setText("No gesture recognized");
+            }
         }
     }
 
@@ -156,7 +179,7 @@ public class GameActivity extends AppCompatActivity {
                 tv.setTextColor(Color.WHITE);
                 
                 if (highlights[r][c]) {
-                    tv.setBackgroundColor(Color.parseColor("#2E7D32")); // Green
+                    tv.setBackgroundColor(Color.parseColor("#2E7D32"));
                 } else {
                     tv.setBackgroundColor(Color.parseColor("#444444"));
                 }
@@ -207,27 +230,12 @@ public class GameActivity extends AppCompatActivity {
 
             HandLandmarkerResult result = mediaPipe.detect(image);
             float[][] frameLandmarks = landmarkProcessor.process(result);
-            frameBuffer.addFrame(frameLandmarks);
-
-            if (frameBuffer.isFull()) {
-                float[] probs = modelRunner.run(frameBuffer.getFlattenedInput());
-                if (probs != null) {
-                    PredictionManager.Prediction p = predictionManager.update(probs);
-                    ui.post(() -> {
-                        if (!p.word.isEmpty()) {
-                            predictionLetterText.setText(p.word + " (" + String.format("%.2f", p.confidence) + ")");
-                        }
-                        if (p.stable && !p.word.isEmpty()) {
-                            long now = System.currentTimeMillis();
-                            if ((now - lastMatchMs) > MATCH_COOLDOWN_MS || !p.word.equals(lastStableWord)) {
-                                viewModel.onWordPredicted(p.word, p.confidence);
-                                lastStableWord = p.word;
-                                lastMatchMs = now;
-                                predictionManager.clearHistory();
-                            }
-                        }
-                    });
-                }
+            
+            if (isRecording) {
+                frameBuffer.addFrame(frameLandmarks);
+                ui.post(() -> predictionLetterText.setText("Frames: " + frameBuffer.getFrameCount() + "/150"));
+            } else {
+                ui.post(() -> predictionLetterText.setText("Tap Record to Start"));
             }
         } finally {
             image.close();
