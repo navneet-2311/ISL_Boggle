@@ -173,11 +173,11 @@ public class GameActivity extends AppCompatActivity {
         viewModel.getHighlighted().observe(this, highlighted -> updateGridDisplay());
 
         viewModel.getIsGameOver().observe(this, isOver -> {
-            if (isOver) handleGameOver("Time's Up!");
+            if (isOver) handleGameOver("Time's Up!", false);
         });
 
         viewModel.getIsLevelComplete().observe(this, complete -> {
-            if (complete) handleGameOver("Level Complete!");
+            if (complete) handleGameOver("Level Complete!", true);
         });
     }
 
@@ -216,8 +216,8 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    private void handleGameOver(String title) {
-        new AlertDialog.Builder(this)
+    private void handleGameOver(String title, boolean isSolved) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage("Your final score: " + viewModel.getFinalScore())
                 .setCancelable(false)
@@ -225,13 +225,17 @@ public class GameActivity extends AppCompatActivity {
                     viewModel.retry();
                     frameBuffer.clear();
                     lastDebugPrediction = "";
-                })
-                .setNegativeButton("Back to Levels", (dialog, which) -> {
-                    LevelRepository repo = new LevelRepository(this);
-                    repo.unlockNextLevel(viewModel.getCurrentLevelId());
-                    finish();
-                })
-                .show();
+                });
+
+        builder.setNegativeButton("Back to Levels", (dialog, which) -> {
+            if (isSolved) {
+                LevelRepository repo = new LevelRepository(this);
+                repo.unlockNextLevel(viewModel.getCurrentLevelId());
+            }
+            finish();
+        });
+
+        builder.show();
     }
 
     private final androidx.activity.result.ActivityResultLauncher<String> permissionLauncher =

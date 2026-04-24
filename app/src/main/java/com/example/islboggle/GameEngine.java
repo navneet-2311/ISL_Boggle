@@ -14,30 +14,37 @@ public class GameEngine {
 
     private Level currentLevel;
     private final Set<String> foundWords = new HashSet<>();
-    private final boolean[][] highlighted;
+    private boolean[][] highlighted;
     private int score = 0;
 
     public GameEngine() {
-        highlighted = new boolean[4][4];
+        // Initial dummy size, will be re-initialized in startLevel
+        highlighted = new boolean[1][1];
     }
 
     public void startLevel(Level level) {
         this.currentLevel = level;
         this.foundWords.clear();
         this.score = 0;
+        if (level != null && level.grid != null) {
+            int rows = level.grid.length;
+            int cols = level.grid[0].length;
+            highlighted = new boolean[rows][cols];
+        }
         resetHighlights();
     }
 
     private void resetHighlights() {
-        for (int r = 0; r < 4; r++) {
-            for (int c = 0; c < 4; c++) {
+        if (highlighted == null) return;
+        for (int r = 0; r < highlighted.length; r++) {
+            for (int c = 0; c < highlighted[0].length; c++) {
                 highlighted[r][c] = false;
             }
         }
     }
 
     public char[][] getGrid() {
-        return currentLevel != null ? currentLevel.grid : new char[4][4];
+        return currentLevel != null ? currentLevel.grid : new char[0][0];
     }
 
     public boolean[][] getHighlighted() {
@@ -68,12 +75,14 @@ public class GameEngine {
     }
 
     private void highlightWordOnGrid(WordPath wp) {
-        if (wp.path == null) return;
+        if (wp.path == null || highlighted == null) return;
+        int rows = highlighted.length;
+        int cols = highlighted[0].length;
         for (int[] pos : wp.path) {
             if (pos.length == 2) {
                 int r = pos[0];
                 int c = pos[1];
-                if (r >= 0 && r < 4 && c >= 0 && c < 4) {
+                if (r >= 0 && r < rows && c >= 0 && c < cols) {
                     highlighted[r][c] = true;
                 }
             }
