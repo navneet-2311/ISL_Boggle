@@ -25,6 +25,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.islboggle.CameraManager;
 import com.example.islboggle.FrameBuffer;
+import com.example.islboggle.Labels;
 import com.example.islboggle.LandmarkProcessor;
 import com.example.islboggle.MediaPipeHandler;
 import com.example.islboggle.ModelRunner;
@@ -54,6 +55,7 @@ public class GameActivity extends AppCompatActivity {
 
     private int levelId;
     private boolean isRecording = false;
+    private boolean handInFrame = false;
     private String lastDebugPrediction = "";
     private final Handler ui = new Handler(Looper.getMainLooper());
 
@@ -127,18 +129,32 @@ public class GameActivity extends AppCompatActivity {
     }
 
     private void processRecordedBuffer() {
-        float[] probs = modelRunner.run(frameBuffer.getFlattenedInput());
-        if (probs != null) {
-            PredictionManager.Prediction p = predictionManager.update(probs);
-            if (!p.word.isEmpty()) {
-                lastDebugPrediction = "Debug: " + p.word + " (" + String.format("%.2f", p.confidence) + ")";
-                viewModel.onWordPredicted(p.word, p.confidence);
+        float[][][][] input = frameBuffer.getFlattenedInput();
+        float[] probs = modelRunner.run(input);
+
+        if (probs != null && probs.length > 0) {
+            int argmax = 0;
+            float maxProb = probs[0];
+            for (int i = 1; i < probs.length; i++) {
+                if (probs[i] > maxProb) {
+                    maxProb = probs[i];
+                    argmax = i;
+                }
+            }
+
+            String word = Labels.forIndex(argmax);
+            if (!word.isEmpty()) {
+                lastDebugPrediction = "Debug: " + word + " (" + String.format("%.2f", maxProb) + ")";
+                ui.post(() -> predictionLetterText.setText(lastDebugPrediction));
+                viewModel.onWordPredicted(word, maxProb);
             } else {
-                lastDebugPrediction = "";
-                statusText.setText("No gesture recognized");
+                lastDebugPrediction = "Unknown Index: " + argmax;
+                ui.post(() -> predictionLetterText.setText(lastDebugPrediction));
             }
         } else {
-            lastDebugPrediction = "";
+            lastDebugPrediction = "Error: No model output";
+            ui.post(() -> predictionLetterText.setText(lastDebugPrediction));
+            Log.e(TAG, "Inference failed: model returned null or empty");
         }
     }
 
@@ -235,13 +251,15 @@ public class GameActivity extends AppCompatActivity {
             if (Boolean.TRUE.equals(viewModel.getIsGameOver().getValue())) return;
 
             HandLandmarkerResult result = mediaPipe.detect(image);
+            handInFrame = (result != null && !result.landmarks().isEmpty());
             float[][] frameLandmarks = landmarkProcessor.process(result);
             
             if (isRecording) {
                 frameBuffer.addFrame(frameLandmarks);
                 int count = frameBuffer.getFrameCount();
                 ui.post(() -> {
-                    predictionLetterText.setText("Frames: " + count + "/" + FrameBuffer.BUFFER_SIZE);
+                    String status = handInFrame ? " (Hand OK)" : " (No Hand!)";
+                    predictionLetterText.setText("Recording" + status + ": " + count + "/" + FrameBuffer.BUFFER_SIZE);
                     if (count >= FrameBuffer.BUFFER_SIZE) {
                         stopRecordingSequence();
                     }
@@ -251,7 +269,7 @@ public class GameActivity extends AppCompatActivity {
                     if (!lastDebugPrediction.isEmpty()) {
                         predictionLetterText.setText(lastDebugPrediction);
                     } else {
-                        predictionLetterText.setText("Tap Record to Start");
+                        predictionLetterText.setText(handInFrame ? "Hand Detected - Ready" : "Tap Record to Start");
                     }
                 });
             }
