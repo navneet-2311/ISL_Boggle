@@ -42,6 +42,9 @@ public final class ActivityGameBinding implements ViewBinding {
   public final PreviewView previewView;
 
   @NonNull
+  public final Button recordButton;
+
+  @NonNull
   public final TextView scoreText;
 
   @NonNull
@@ -59,8 +62,9 @@ public final class ActivityGameBinding implements ViewBinding {
   private ActivityGameBinding(@NonNull ConstraintLayout rootView, @NonNull GridLayout boggleGrid,
       @NonNull Button clearButton, @NonNull Button deleteButton, @NonNull LinearLayout gamePanel,
       @NonNull TextView predictionLetterText, @NonNull PreviewView previewView,
-      @NonNull TextView scoreText, @NonNull TextView statusText, @NonNull Button submitButton,
-      @NonNull TextView timerText, @NonNull TextView wordBuilderText) {
+      @NonNull Button recordButton, @NonNull TextView scoreText, @NonNull TextView statusText,
+      @NonNull Button submitButton, @NonNull TextView timerText,
+      @NonNull TextView wordBuilderText) {
     this.rootView = rootView;
     this.boggleGrid = boggleGrid;
     this.clearButton = clearButton;
@@ -68,6 +72,7 @@ public final class ActivityGameBinding implements ViewBinding {
     this.gamePanel = gamePanel;
     this.predictionLetterText = predictionLetterText;
     this.previewView = previewView;
+    this.recordButton = recordButton;
     this.scoreText = scoreText;
     this.statusText = statusText;
     this.submitButton = submitButton;
@@ -138,6 +143,12 @@ public final class ActivityGameBinding implements ViewBinding {
         break missingId;
       }
 
+      id = R.id.recordButton;
+      Button recordButton = ViewBindings.findChildViewById(rootView, id);
+      if (recordButton == null) {
+        break missingId;
+      }
+
       id = R.id.scoreText;
       TextView scoreText = ViewBindings.findChildViewById(rootView, id);
       if (scoreText == null) {
@@ -169,8 +180,8 @@ public final class ActivityGameBinding implements ViewBinding {
       }
 
       return new ActivityGameBinding((ConstraintLayout) rootView, boggleGrid, clearButton,
-          deleteButton, gamePanel, predictionLetterText, previewView, scoreText, statusText,
-          submitButton, timerText, wordBuilderText);
+          deleteButton, gamePanel, predictionLetterText, previewView, recordButton, scoreText,
+          statusText, submitButton, timerText, wordBuilderText);
     }
     String missingId = rootView.getResources().getResourceName(id);
     throw new NullPointerException("Missing required view with ID: ".concat(missingId));

@@ -10,7 +10,6 @@ import java.util.List;
  * Converts MediaPipe HandLandmarkerResult into a [42, 3] array.
  * 21 landmarks for Left Hand + 21 landmarks for Right Hand.
  * If a hand is missing, it is zero-filled.
- * Includes a rotation transformation to align Portrait mobile data with Landscape laptop data.
  */
 public class LandmarkProcessor {
 
@@ -41,18 +40,10 @@ public class LandmarkProcessor {
             for (int j = 0; j < NUM_LANDMARKS && j < landmarks.size(); j++) {
                 NormalizedLandmark lm = landmarks.get(j);
                 
-                // ROTATION TRANSFORMATION
-                // Since training data was collected on a laptop (Landscape) and 
-                // deployment is on a mobile (typically Portrait), we rotate the 
-                // coordinates 90 degrees to align the axes.
-                // New X = Y
-                // New Y = 1 - X
-                float rawX = lm.x();
-                float rawY = lm.y();
-                
-                frame[offset + j][0] = rawY;          // New X
-                frame[offset + j][1] = 1.0f - rawX;   // New Y
-                frame[offset + j][2] = lm.z();        // Z remains same
+                // NO ROTATION: Use raw coordinates directly
+                frame[offset + j][0] = lm.x();
+                frame[offset + j][1] = lm.y();
+                frame[offset + j][2] = lm.z();
             }
         }
 

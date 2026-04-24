@@ -25,6 +25,10 @@ public class FrameBuffer {
         }
     }
 
+    public synchronized int getFrameCount() {
+        return buffer.size();
+    }
+
     public synchronized boolean isFull() {
         return buffer.size() == BUFFER_SIZE;
     }

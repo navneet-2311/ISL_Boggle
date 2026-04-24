@@ -1,14 +1,18 @@
 [
     {
+        "merged": "C:\\Users\\nav86\\.gradle\\daemon\\8.2.1\\com.example.islboggle.app-mergeDebugResources-36:\\layout\\activity_game.xml",
+        "source": "C:\\Users\\nav86\\.gradle\\daemon\\8.2.1\\com.example.islboggle.app-main-39:\\layout\\activity_game.xml"
+    },
+    {
         "merged": "com.example.islboggle.app-mergeDebugResources-36:/layout/activity_game.xml",
         "source": "com.example.islboggle.app-main-39:/layout/activity_game.xml"
     },
     {
-        "merged": "com.example.islboggle.app-mergeDebugResources-36:/layout/item_level_node.xml",
-        "source": "com.example.islboggle.app-main-39:/layout/item_level_node.xml"
+        "merged": "C:\\Users\\nav86\\.gradle\\daemon\\8.2.1\\com.example.islboggle.app-mergeDebugResources-36:\\layout\\activity_map.xml",
+        "source": "C:\\Users\\nav86\\.gradle\\daemon\\8.2.1\\com.example.islboggle.app-main-39:\\layout\\activity_map.xml"
     },
     {
-        "merged": "com.example.islboggle.app-mergeDebugResources-36:/layout/activity_map.xml",
-        "source": "com.example.islboggle.app-main-39:/layout/activity_map.xml"
+        "merged": "C:\\Users\\nav86\\.gradle\\daemon\\8.2.1\\com.example.islboggle.app-mergeDebugResources-36:\\layout\\item_level_node.xml",
+        "source": "C:\\Users\\nav86\\.gradle\\daemon\\8.2.1\\com.example.islboggle.app-main-39:\\layout\\item_level_node.xml"
     }
 ]

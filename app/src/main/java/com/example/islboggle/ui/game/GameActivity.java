@@ -54,6 +54,7 @@ public class GameActivity extends AppCompatActivity {
 
     private int levelId;
     private boolean isRecording = false;
+    private String lastDebugPrediction = "";
     private final Handler ui = new Handler(Looper.getMainLooper());
 
     @Override
@@ -109,20 +110,20 @@ public class GameActivity extends AppCompatActivity {
         if (isRecording) return;
         
         isRecording = true;
+        lastDebugPrediction = "";
         frameBuffer.clear();
         recordButton.setEnabled(false);
-        recordButton.setText("RECORDING... (5s)");
+        recordButton.setText("RECORDING...");
         recordButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.GRAY));
+    }
 
-        // Stop recording after 5 seconds
-        ui.postDelayed(() -> {
-            isRecording = false;
-            recordButton.setEnabled(true);
-            recordButton.setText("RECORD GESTURE (5s)");
-            recordButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#D32F2F")));
-            
-            processRecordedBuffer();
-        }, 5000);
+    private void stopRecordingSequence() {
+        isRecording = false;
+        recordButton.setEnabled(true);
+        recordButton.setText("RECORD GESTURE");
+        recordButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#D32F2F")));
+        
+        processRecordedBuffer();
     }
 
     private void processRecordedBuffer() {
@@ -130,10 +131,14 @@ public class GameActivity extends AppCompatActivity {
         if (probs != null) {
             PredictionManager.Prediction p = predictionManager.update(probs);
             if (!p.word.isEmpty()) {
+                lastDebugPrediction = "Debug: " + p.word + " (" + String.format("%.2f", p.confidence) + ")";
                 viewModel.onWordPredicted(p.word, p.confidence);
             } else {
+                lastDebugPrediction = "";
                 statusText.setText("No gesture recognized");
             }
+        } else {
+            lastDebugPrediction = "";
         }
     }
 
@@ -203,6 +208,7 @@ public class GameActivity extends AppCompatActivity {
                 .setPositiveButton("Retry", (dialog, which) -> {
                     viewModel.retry();
                     frameBuffer.clear();
+                    lastDebugPrediction = "";
                 })
                 .setNegativeButton("Back to Levels", (dialog, which) -> {
                     LevelRepository repo = new LevelRepository(this);
@@ -233,9 +239,21 @@ public class GameActivity extends AppCompatActivity {
             
             if (isRecording) {
                 frameBuffer.addFrame(frameLandmarks);
-                ui.post(() -> predictionLetterText.setText("Frames: " + frameBuffer.getFrameCount() + "/150"));
+                int count = frameBuffer.getFrameCount();
+                ui.post(() -> {
+                    predictionLetterText.setText("Frames: " + count + "/" + FrameBuffer.BUFFER_SIZE);
+                    if (count >= FrameBuffer.BUFFER_SIZE) {
+                        stopRecordingSequence();
+                    }
+                });
             } else {
-                ui.post(() -> predictionLetterText.setText("Tap Record to Start"));
+                ui.post(() -> {
+                    if (!lastDebugPrediction.isEmpty()) {
+                        predictionLetterText.setText(lastDebugPrediction);
+                    } else {
+                        predictionLetterText.setText("Tap Record to Start");
+                    }
+                });
             }
         } finally {
             image.close();

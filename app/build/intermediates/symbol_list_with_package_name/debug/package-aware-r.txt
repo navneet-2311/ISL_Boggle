@@ -3473,6 +3473,7 @@ id progress_circular
 id progress_horizontal
 id radio
 id ratio
+id recordButton
 id rectangles
 id recyclerView
 id report_drawn
