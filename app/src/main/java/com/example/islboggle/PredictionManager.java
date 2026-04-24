@@ -9,14 +9,14 @@ import java.util.Map;
 
 /**
  * Applies confidence threshold + majority voting over the last N predictions
- * to produce a stable letter.
+ * to produce a stable word.
  */
 public class PredictionManager {
 
     private static final String TAG = "PredictionManager";
-    public static final float DEFAULT_THRESHOLD = 0.8f;
-    public static final int   DEFAULT_WINDOW    = 10;
-    public static final int   DEFAULT_MAJORITY  = 6; // out of 10
+    public static final float DEFAULT_THRESHOLD = 0.7f;
+    public static final int   DEFAULT_WINDOW    = 5;
+    public static final int   DEFAULT_MAJORITY  = 3; // out of 5
 
     private final float threshold;
     private final int windowSize;
@@ -36,12 +36,12 @@ public class PredictionManager {
     public static class Prediction {
         public final int    classIndex;     // -1 if none
         public final float  confidence;
-        public final String letter;         // "" if none
+        public final String word;           // "" if none
         public final boolean stable;        // true when majority criterion met
-        public Prediction(int classIndex, float confidence, String letter, boolean stable) {
+        public Prediction(int classIndex, float confidence, String word, boolean stable) {
             this.classIndex = classIndex;
             this.confidence = confidence;
-            this.letter = letter;
+            this.word = word;
             this.stable = stable;
         }
         public static Prediction none() { return new Prediction(-1, 0f, "", false); }
@@ -52,7 +52,6 @@ public class PredictionManager {
      */
     public Prediction update(float[] probs) {
         if (probs == null || probs.length == 0) {
-            // No frame info — don't push to history (preserve previous state).
             return Prediction.none();
         }
         int argmax = 0;
@@ -80,13 +79,10 @@ public class PredictionManager {
         }
 
         boolean stable = history.size() >= windowSize && topCount >= majorityCount;
-        Log.d(TAG, "argmax=" + argmax + " conf=" + best
-                + " topClass=" + topClass + " topCount=" + topCount + " stable=" + stable);
-
+        
         return new Prediction(argmax, best, Labels.forIndex(argmax), stable);
     }
 
-    /** Call after a stable letter is consumed so we don't repeatedly fire it. */
     public void clearHistory() {
         history.clear();
     }

@@ -1,17 +1,19 @@
 package com.example.islboggle.data;
 
+import java.util.List;
+
 public class Level {
     public final int id;
-    public final int difficulty;
+    public final char[][] grid;
+    public final List<WordPath> words;
     public final long timeLimitMs;
-    public final int gridSize;
     public boolean isUnlocked;
 
-    public Level(int id, int difficulty, long timeLimitMs, int gridSize, boolean isUnlocked) {
+    public Level(int id, char[][] grid, List<WordPath> words, long timeLimitMs, boolean isUnlocked) {
         this.id = id;
-        this.difficulty = difficulty;
+        this.grid = grid;
+        this.words = words;
         this.timeLimitMs = timeLimitMs;
-        this.gridSize = gridSize;
         this.isUnlocked = isUnlocked;
     }
 }
