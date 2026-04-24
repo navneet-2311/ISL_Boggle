@@ -10,11 +10,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.Arrays;
 
 /**
  * Loads model.tflite and performs inference on a sequence of frames.
- * Input shape:  [1, 150, 42, 3]
- * Output shape: [1, N] where N is number of words
  */
 public class ModelRunner {
 
@@ -23,6 +22,8 @@ public class ModelRunner {
 
     private final Interpreter interpreter;
     private final int numClasses;
+    private final int[] inputShape;
+    private final int[] outputShape;
 
     public ModelRunner(Context context) throws IOException {
         MappedByteBuffer modelBuffer = loadModelFile(context);
@@ -30,9 +31,14 @@ public class ModelRunner {
         opts.setNumThreads(4);
         this.interpreter = new Interpreter(modelBuffer, opts);
 
-        int[] outShape = interpreter.getOutputTensor(0).shape();
-        this.numClasses = outShape[outShape.length - 1];
-        Log.i(TAG, "Model loaded. Output classes: " + numClasses);
+        this.inputShape = interpreter.getInputTensor(0).shape();
+        this.outputShape = interpreter.getOutputTensor(0).shape();
+        this.numClasses = outputShape[outputShape.length - 1];
+        
+        Log.i(TAG, "Model Loaded Successfully");
+        Log.i(TAG, "Input Shape: " + Arrays.toString(inputShape));
+        Log.i(TAG, "Output Shape: " + Arrays.toString(outputShape));
+        Log.i(TAG, "Detected Classes: " + numClasses);
     }
 
     private MappedByteBuffer loadModelFile(Context context) throws IOException {
@@ -48,16 +54,28 @@ public class ModelRunner {
     }
 
     /**
-     * @param sequence float[1][150][42][3]
-     * @return probability array of length numClasses
+     * @param sequence Input sequence
+     * @return probability array
      */
     public float[] run(float[][][][] sequence) {
         if (sequence == null) return null;
 
         try {
-            float[][] output = new float[1][numClasses];
-            interpreter.run(sequence, output);
-            return output[0];
+            // We use the shape detected from the model itself to allocate output
+            if (outputShape.length == 2) {
+                float[][] output = new float[outputShape[0]][outputShape[1]];
+                interpreter.run(sequence, output);
+                return output[0];
+            } else if (outputShape.length == 3) {
+                // Handle models with [Batch, Sequence, Classes] shape
+                float[][][] output = new float[outputShape[0]][outputShape[1]][outputShape[2]];
+                interpreter.run(sequence, output);
+                // Return the last prediction in the sequence by default
+                return output[0][outputShape[1] - 1];
+            } else {
+                Log.e(TAG, "Unsupported output shape: " + Arrays.toString(outputShape));
+                return null;
+            }
         } catch (Exception e) {
             Log.e(TAG, "Inference failed", e);
             return null;
