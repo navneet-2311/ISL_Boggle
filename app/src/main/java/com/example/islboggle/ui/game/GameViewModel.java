@@ -11,6 +11,8 @@ import com.example.islboggle.GameEngine;
 import com.example.islboggle.data.Level;
 import com.example.islboggle.data.LevelRepository;
 
+import java.util.Locale;
+
 public class GameViewModel extends AndroidViewModel {
     private final GameEngine gameEngine;
     private final LevelRepository levelRepository;
@@ -46,7 +48,7 @@ public class GameViewModel extends AndroidViewModel {
         grid.setValue(gameEngine.getGrid());
         highlighted.setValue(gameEngine.getHighlighted());
         score.setValue(0);
-        statusMessage.setValue("Find 3 words!");
+        statusMessage.setValue("Find all words!");
         lastPredictedWord.setValue("-");
         
         startTimer(currentLevel.timeLimitMs);
@@ -69,10 +71,12 @@ public class GameViewModel extends AndroidViewModel {
 
     public void onWordPredicted(String word, float confidence) {
         if (Boolean.TRUE.equals(isGameOver.getValue()) || Boolean.TRUE.equals(isLevelComplete.getValue())) return;
-        if (confidence < 0.7f) return;
 
-        lastPredictedWord.setValue(word + " (" + String.format("%.2f", confidence) + ")");
+        // Update the last predicted word display for debugging
+        lastPredictedWord.setValue(word + " (" + String.format(Locale.US, "%.2f", confidence) + ")");
         
+        // Removed the confidence threshold completely as requested. 
+        // Any prediction will be processed.
         int pts = gameEngine.tryMatchWord(word);
         if (pts > 0) {
             score.setValue(gameEngine.getScore());

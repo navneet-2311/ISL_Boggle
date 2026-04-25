@@ -34,9 +34,9 @@ public class MediaPipeHandler {
                         .setBaseOptions(baseOptions)
                         .setRunningMode(RunningMode.IMAGE)
                         .setNumHands(2)
-                        .setMinHandDetectionConfidence(0.3f) // Lowered slightly to improve detection
-                        .setMinHandPresenceConfidence(0.3f)
-                        .setMinTrackingConfidence(0.3f)
+                        .setMinHandDetectionConfidence(0.5f)
+                        .setMinHandPresenceConfidence(0.5f)
+                        .setMinTrackingConfidence(0.5f)
                         .build();
 
         handLandmarker = HandLandmarker.createFromOptions(context, options);
@@ -49,7 +49,6 @@ public class MediaPipeHandler {
     public HandLandmarkerResult detect(@NonNull ImageProxy imageProxy) {
         try {
             // Use CameraX's built-in conversion which handles rotation and YUV format correctly.
-            // This ensures MediaPipe sees the image in the correct upright orientation.
             Bitmap bitmap = imageProxy.toBitmap();
             if (bitmap == null) return null;
 

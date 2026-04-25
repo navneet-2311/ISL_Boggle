@@ -7,7 +7,7 @@ public final class Labels {
     private Labels() {}
 
     public static final String[] LABELS = new String[] {
-            "Absent", "Accept", "Accident", "Actor", "Adopt", "Adult", "Aeroplane", "After", "Age", "Airport",
+            "Absent", "Accept", "Accident", "Actor", "Adopt", "Adult", "Plane", "After", "Age", "Airport",
             "Alive", "All", "Alot", "Animals", "Ant", "Anxiety", "Any", "Approve", "Artist", "Aunt",
             "Author", "Baby", "Back", "Bad", "Badge", "Bag", "Bail", "Bald", "Ball", "Ballet",
             "Balloon", "Ban", "Bandaid", "Bank", "Baseball", "Basket", "Basketball", "Bath", "Bathroom", "Beach",
